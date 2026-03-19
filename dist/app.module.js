@@ -17,14 +17,17 @@ const auth_module_1 = require("./auth/auth.module");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const comments_module_1 = require("./comments/comments.module");
-const process_1 = require("process");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forRoot(process_1.env.MONGO_URI || 'mongodb://localhost:27017/nest-course'),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            mongoose_1.MongooseModule.forRoot(process.env.MONGO_URI),
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
                 serveRoot: '/uploads',
