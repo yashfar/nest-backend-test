@@ -10,11 +10,13 @@ import { AuthModule } from './auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CommentsModule } from './comments/comments.module';
+import { env } from 'process';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/nest-course'),
-
+    MongooseModule.forRoot(
+      env.MONGO_URI || 'mongodb://localhost:27017/nest-course',
+    ),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
