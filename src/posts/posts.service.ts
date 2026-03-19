@@ -11,8 +11,11 @@ export class PostsService {
     private postModel: Model<Post>,
   ) {}
 
-  async createPost(post: CreatePostDto) {
-    await this.postModel.create(post);
+  async createPost(post: CreatePostDto, file?: Express.Multer.File) {
+    return this.postModel.create({
+      ...post,
+      image: file?.filename,
+    });
   }
 
   async getAllPosts() {

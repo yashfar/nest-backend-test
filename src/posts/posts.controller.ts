@@ -6,11 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('posts')
 export class PostsController {
@@ -18,9 +22,24 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  createPost(@Body() post: CreatePostDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/post-images',
+        filename: (req, file, cb) => {
+          const uniqueName = Date.now() + '-' + file.originalname;
+
+          cb(null, uniqueName);
+        },
+      }),
+    }),
+  )
+  createPost(
+    @Body() post: CreatePostDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return this.postService
-      .createPost(post)
+      .createPost(post, file)
       .then(() => {
         return { message: 'Post created successfully' };
       })
@@ -29,15 +48,18 @@ export class PostsController {
       });
   }
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAllPosts() {
     return this.postService.getAllPosts();
   }
   @Get('user/:userId')
+  @UseGuards(JwtAuthGuard)
   getPostsByUserId(@Param('userId') userId: string) {
     return this.postService.getPostsByUserId(userId);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   updatePost(@Body() post: UpdatePostDto, @Param('id') id: string) {
     return this.postService
       .updatePost(id, post)
@@ -50,6 +72,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   deletePost(@Param('id') id: string) {
     return this.postService
       .deletePost(id)

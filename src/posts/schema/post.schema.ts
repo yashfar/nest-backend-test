@@ -13,6 +13,11 @@ export class Post {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   author: Types.ObjectId;
+
+  @Prop({
+    required: false,
+  })
+  image?: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
