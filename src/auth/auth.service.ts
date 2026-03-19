@@ -15,17 +15,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(body: RegisterDto) {
-    const hashedPassword = await bcrypt.hash(body.password, 10);
-
-    const user = await this.usersService.createUser({
-      ...body,
-      password: hashedPassword,
-    });
-
-    return user;
-  }
-
   async login(body: LoginDto) {
     const user = await this.usersService.findUserByEmail(body.email);
     if (!user) {
@@ -41,5 +30,16 @@ export class AuthService {
         userId: user._id,
       }),
     };
+  }
+
+  async register(body: RegisterDto) {
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
+    const user = await this.usersService.createUser({
+      ...body,
+      password: hashedPassword,
+    });
+
+    return user;
   }
 }
